@@ -2,22 +2,22 @@ import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
 import { filterImageFromURL, deleteLocalFiles } from './util/util';
 import { NextFunction } from 'connect';
+import validator from 'validator';
 
 //imageUrlValidator middleware validates if the image_url query string is valid.
 //INPUTS
-//  standard req, res and next
+//  standard req, res and next()
 //RETURNS
-//  if the image_url query string exists and valid, calls the next
-//  otherwise, return HTTP status 400 (Bad request)
+//  if the image_url query string exists and valid, calls the next()
+//  otherwise, returns HTTP status 400 (Bad request)
 function imageUrlValidator(req: Request, res: Response, next: NextFunction) {
     if (!req.query || !req.query.image_url) {
         return res.status(400).send({ message: 'Image URL required!' });
     }
 
     const { image_url } = req.query;
-    console.debug({ image_url });
 
-    if (/^[a-zA-z0-9_]+\.(png|jpg|jpeg|gif|bmp)$/.test(image_url)) {
+    if (validator.isURL(image_url)) {
         return next();
     }
 
@@ -41,13 +41,10 @@ function imageUrlValidator(req: Request, res: Response, next: NextFunction) {
             const { image_url } = req.query;
             const filteredpath = await filterImageFromURL(image_url);
 
-            console.debug("filteredpath", filteredpath);
-
             res.sendFile(filteredpath);
-
-            deleteLocalFiles([image_url]);
+            
+            //deleteLocalFiles([filteredpath]);
         } catch (error) {
-            console.log("Error", error);
             res.status(502).send("Error occurred!");
         }
     });
