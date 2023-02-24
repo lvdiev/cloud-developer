@@ -15,13 +15,11 @@ function imageUrlValidator(req: Request, res: Response, next: NextFunction) {
         return res.status(400).send({ message: 'Image URL required!' });
     }
 
-    const { image_url } = req.query;
-
-    if (validator.isURL(image_url)) {
-        return next();
+    if (typeof req.query.image_url !== "string" || !validator.isURL(req.query.image_url)) {
+        return res.status(400).send({ message: 'Invalid Image URL!' });
     }
 
-    return res.status(400).send({ message: 'Invalid Image URL!' });
+    return next();
 }
 
 (async () => {
@@ -37,7 +35,7 @@ function imageUrlValidator(req: Request, res: Response, next: NextFunction) {
 
     //image filter
     app.get("/filteredimage", imageUrlValidator, async (req, res) => {
-        const { image_url } = req.query;
+        const image_url = req.query.image_url as string;
         console.debug("image_url:", image_url);
 
         try {
@@ -50,7 +48,9 @@ function imageUrlValidator(req: Request, res: Response, next: NextFunction) {
 
         } catch (error) {
             console.error(error);
-            res.status(500).send(`Error occurred when filtering public image!<br/>${image_url}`);
+            res.status(500).send({
+                message: `Error occurred when filtering public image!`,
+            });
         }
     });
 
