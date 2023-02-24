@@ -37,15 +37,20 @@ function imageUrlValidator(req: Request, res: Response, next: NextFunction) {
 
     //image filter
     app.get("/filteredimage", imageUrlValidator, async (req, res) => {
-        try {
-            const { image_url } = req.query;
-            const filteredpath = await filterImageFromURL(image_url);
+        const { image_url } = req.query;
+        console.debug("image_url:", image_url);
 
-            res.sendFile(filteredpath);
-            
-            //deleteLocalFiles([filteredpath]);
+        try {
+            const filteredpath = await filterImageFromURL(image_url);
+            console.debug("filteredpath", filteredpath);
+
+            res.sendFile(filteredpath, () => {
+                deleteLocalFiles([filteredpath]);
+            });
+
         } catch (error) {
-            res.status(502).send("Error occurred!");
+            console.error(error);
+            res.status(500).send(`Error occurred when filtering public image!<br/>${image_url}`);
         }
     });
 
