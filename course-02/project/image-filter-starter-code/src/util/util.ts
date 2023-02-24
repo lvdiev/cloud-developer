@@ -12,7 +12,6 @@ import { v4 as uuidv4 } from 'uuid';
 export async function filterImageFromURL(inputURL: string): Promise<string> {
     return new Promise(async (resolve, reject) => {
         try {
-            console.debug("inputURL:", inputURL);
 
             const photo = await Jimp.read(inputURL);
             const outpath = `${__dirname}/tmp/filtered.${uuidv4()}.jpg`;
@@ -21,12 +20,10 @@ export async function filterImageFromURL(inputURL: string): Promise<string> {
                 .quality(60) // set JPEG quality
                 .greyscale() // set greyscale
                 .write(outpath, _ => {
-                    console.debug("outpath", outpath);
                     resolve(outpath);
                 });
 
         } catch (error) {
-            console.error(error);
             reject(error);
         }
     });
