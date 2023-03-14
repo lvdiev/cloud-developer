@@ -1,6 +1,19 @@
-import * as AWS from 'aws-sdk'
-import * as AWSXRay from 'aws-xray-sdk'
+import { createDynamoDBClient } from './awsUtils';
 
-const XAWS = AWSXRay.captureAWS(AWS)
+const dbClient = createDynamoDBClient();
 
-// TODO: Implement the fileStogare logic
+export async function updateAttachmentUrl(userId: string, todoId: string, url: string): Promise<string> {
+  await dbClient.update({
+    TableName: process.env.TODOS_TABLE,
+    Key: {
+      userId: userId,
+      todoId: todoId
+    },
+    UpdateExpression: "set attachmentUrl = :url",
+    ExpressionAttributeValues: {
+      ":url": url,
+    }
+  }).promise();
+
+  return url
+}
