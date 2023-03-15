@@ -69,10 +69,7 @@ export async function updateTodo(userId: String, todoId: String, { name, dueDate
         todoId: todoId,
         userId: userId
       },
-      UpdateExpression: "set todo_name = :name, dueDate = :dueDate, done = :done",
-      ExpressionAttributeNames: {
-        'todo_name': 'name',
-      },
+      UpdateExpression: "set name = :name, dueDate = :dueDate, done = :done",
       ExpressionAttributeValues: {
         ":name": name,
         ":dueDate": dueDate,
