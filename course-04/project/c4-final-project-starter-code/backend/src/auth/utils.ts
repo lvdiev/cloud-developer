@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import { APIGatewayProxyEvent } from "aws-lambda";
 import { decode } from 'jsonwebtoken';
 import { SigningKey } from './SigningKey';
 import { JwtPayload } from './JwtPayload';
@@ -11,6 +12,30 @@ import { JwtPayload } from './JwtPayload';
 export function parseUserId(jwtToken: string): string {
   const decodedJwt = decode(jwtToken) as JwtPayload
   return decodedJwt.sub
+}
+
+/**
+ * Get a user id from an API Gateway event
+ * @param event an event from API Gateway
+ *
+ * @returns a user id from a JWT token
+ */
+export function getUserId(event: APIGatewayProxyEvent): string {
+  const jwtToken = getToken(event.headers.Authorization);
+
+  return parseUserId(jwtToken)
+}
+
+export function getToken(authHeader: string): string {
+  if (!authHeader) throw new Error('No authentication header')
+
+  if (!authHeader.toLowerCase().startsWith('bearer '))
+    throw new Error('Invalid authentication header')
+
+  const split = authHeader.split(' ')
+  const token = split[1]
+
+  return token
 }
 
 export async function getSigningKey(jwksUrl: string, kid: string) {

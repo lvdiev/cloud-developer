@@ -3,7 +3,7 @@ import { CustomAuthorizerEvent, CustomAuthorizerResult } from 'aws-lambda'
 import { decode, verify } from 'jsonwebtoken'
 import { Jwt } from '../../auth/Jwt'
 import { JwtPayload } from '../../auth/JwtPayload'
-import { getSigningKey } from '../../auth/utils'
+import { getSigningKey, getToken } from '../../auth/utils'
 import { createLogger } from '../../utils/logger'
 
 const logger = createLogger('auth_auth0_authorizer');
@@ -63,16 +63,4 @@ async function verifyToken(authHeader: string): Promise<JwtPayload> {
       algorithms: ['RS256']
     }
   ) as JwtPayload;
-}
-
-function getToken(authHeader: string): string {
-  if (!authHeader) throw new Error('No authentication header')
-
-  if (!authHeader.toLowerCase().startsWith('bearer '))
-    throw new Error('Invalid authentication header')
-
-  const split = authHeader.split(' ')
-  const token = split[1]
-
-  return token
 }

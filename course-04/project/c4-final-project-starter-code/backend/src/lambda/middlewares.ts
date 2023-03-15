@@ -1,7 +1,7 @@
 import { APIGatewayProxyResult } from 'aws-lambda';
+import { getUserId } from '../auth/utils';
 import { createLogger } from '../utils/logger';
 import { CustomEvent } from './CustomEvent';
-import { getUserId } from './utils';
 
 const logger = createLogger('lambda_middlewares');
 
@@ -11,11 +11,11 @@ export const credentialsParser = () => ({
     const token = event.headers.Authorization;
 
     if (!token) {
-      const errorResponse: APIGatewayProxyResult = {
+      const res: APIGatewayProxyResult = {
         statusCode: 401,
         body: JSON.stringify({ error: 'No token found.' })
       };
-      return next(errorResponse);
+      return next(res);
     }
 
     try {
@@ -25,12 +25,12 @@ export const credentialsParser = () => ({
     } catch (error) {
       logger.error(error);
 
-      const errorResponse: APIGatewayProxyResult = {
+      const res: APIGatewayProxyResult = {
         statusCode: 401,
         body: JSON.stringify({ message: 'Invalid token.' })
       };
 
-      return next(errorResponse);
+      return next(res);
     }
 
     return next();
