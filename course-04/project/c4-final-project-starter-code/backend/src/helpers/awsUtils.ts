@@ -18,7 +18,7 @@ export function createDynamoDBClient(): DocumentClient {
 }
 
 export function createS3Client() {
-    return new AWS.S3({ signatureVersion: 'v4' });
+    return new xaws.S3({ signatureVersion: 'v4' });
 }
 
 export async function getS3SignedUrl(s3Bucket: string, urlTimeout: number) {
