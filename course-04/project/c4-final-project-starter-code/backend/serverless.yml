@@ -73,7 +73,7 @@ functions:
             - 
               - !GetAtt TodosTable.Arn
               - '/index/'
-              - !GetAtt TodosTable.LocalSecondaryIndexes.0.IndexName
+              - ${self:resources.Resources.TodosTable.Properties.LocalSecondaryIndexes.0.IndexName}
       - Effect: Allow
         Action:
           - xray:PutTraceSegments
@@ -182,9 +182,9 @@ resources:
         ResponseType: 'DEFAULT_4XX'
         StatusCode: '400'
         ResponseParameters:
-          'Access-Control-Allow-Origin': "'*'"
-          'Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-          'Access-Control-Allow-Methods': "'GET,POST,DELETE,PATCH,OPTIONS'"
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,POST,DELETE,PATCH,OPTIONS'"
         RestApiId:
           !Ref ApiGatewayRestApi
     RequestBodyValidator:
