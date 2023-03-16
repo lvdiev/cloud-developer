@@ -30,6 +30,21 @@ provider:
     # Enable API Gateway logs
     restApi: true
 
+custom:
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Todo APIs
+        description: Yet another TODO app
+    models:
+      - name: CreateTodoRequest
+        contentType: application/json
+        schema: ${file(models/create-todo-model.json)}
+      - name: UpdateTodoRequest
+        contentType: application/json
+        schema: ${file(models/update-todo-model.json)}        
+
 
 functions:
 
@@ -58,7 +73,7 @@ functions:
             - 
               - !GetAtt TodosTable.Arn
               - '/index/'
-              - !Ref TodosTableLocalSecondaryIndexName
+              - !GetAtt TodosTable.LocalSecondaryIndexes.0.IndexName
       - Effect: Allow
         Action:
           - xray:PutTraceSegments
@@ -76,6 +91,11 @@ functions:
             schemas:
               application/json: ${file(models/create-todo-model.json)}
           reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new todo
+            description: Create a new todo
+            requestModels:
+              'application/json': CreateTodoRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -98,6 +118,11 @@ functions:
             schemas:
               application/json: ${file(models/update-todo-model.json)}
           reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Update a todo
+            description: Update a todo
+            requestModels:
+              'application/json': UpdateTodoRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -211,8 +236,9 @@ resources:
                 - GET
                 - POST
                 - DELETE
-                - PATCH
-                - OPTIONS
+                - PUT
+                - HEAD
+
               MaxAge: 3000
 
     BucketPolicy:
