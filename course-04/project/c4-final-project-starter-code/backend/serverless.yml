@@ -249,9 +249,15 @@ resources:
           Version: '2012-10-17'
           Statement:
             - Effect: Allow
+              Sid: PublicReadForGetBucketObjects
               Principal: '*'
               Action:
                 - 's3:GetObject'
                 - 's3:PutObject'
-              Resource: !GetAtt TodosTable.Arn
+              Resource:
+                !Join 
+                  - ''
+                  - 
+                    - !GetAtt AttachmentsBucket.Arn
+                    - '/*'
         Bucket: !Ref AttachmentsBucket
